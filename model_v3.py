@@ -131,7 +131,7 @@ class CovidModel(tf.keras.Model):
             asymp_t_1 = forecasted_fluxes[Compartments.asymp.value]['everyone'].read(day - 1)            
 
             forecasted_fluxes[Compartments.asymp.value]['everyone'] = forecasted_fluxes[Compartments.asymp.value]['everyone'].write(day,
-                                                                                              tf.squeeze(r_t[day - warmup_days_val] ** (
+                                                                                              tf.squeeze(asymp_t_1 * r_t[day - warmup_days_val] ** (
                                                                                                               1 / self.T_serial))
                                                                                               )
 
@@ -267,10 +267,10 @@ class CovidModel(tf.keras.Model):
                                                                                                    sigma_bar_G, 0,
                                                                                                    20)
 
-        self.prior_distros[Compartments.mild.value]['everyone']['nu'] = tfp.distributions.TruncatedNormal(nu_bar_M, tau_bar_M, 0, 20)
+        self.prior_distros[Compartments.mild.value]['everyone']['nu'] = tfp.distributions.TruncatedNormal(nu_bar_M, tau_bar_M, 0, 1000)
         self.prior_distros[Compartments.extreme.value]['everyone']['nu'] = tfp.distributions.TruncatedNormal(nu_bar_X, tau_bar_X, 0,
                                                                                           20)
-        self.prior_distros[Compartments.general_ward.value]['everyone']['nu'] = tfp.distributions.Normal(nu_bar_G, tau_bar_G, 0, 20)
+        self.prior_distros[Compartments.general_ward.value]['everyone']['nu'] = tfp.distributions.Normal(nu_bar_G, tau_bar_G, 0, 1000)
 
         return
 
